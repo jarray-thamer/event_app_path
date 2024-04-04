@@ -36,7 +36,7 @@ const Admin = () => {
     fetch(...args).then(async (res) => {
       const data = await res.json();
 
-      if (data.data.role === "admin") {
+      if (data.data.role === "admin" && data.data.role === "manager") {
         setShowadmin(true);
       } else {
         navigate("/register-redirect");

@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=path_db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./my-db:/var/lib/mysql
+  backend:
+    image: backend
+    build: 
+      context: ./backend
+    ports:
+      - "5555:5555"
+    environment:
+      - DB_USER=user
+      - DB_PASSWORD=root
+      - DB_DATABASE_NAME=path_db
+      - DB_HOST=mysql
+  frontend:
+    image: frontend
+    build: 
+      context: ./frontend
+      args: 
+        - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
+        - VITE_BACKEND_URL=http://localhost:5555
+    ports:
+      - "5173:80"
+   
