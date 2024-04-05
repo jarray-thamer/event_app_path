@@ -26,7 +26,10 @@ const RedirectUser = () => {
             navigate("/on-boarding");
           }
         } else if (res.data.data) {
-          if (res.data.data.role === "admin") {
+          if (
+            res.data.data.role === "admin" ||
+            res.data.data.role === "manager"
+          ) {
             navigate(`/admin/${userId}`);
           } else {
             console.log("user");

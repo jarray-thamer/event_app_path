@@ -6,7 +6,7 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=path_db
+      - MYSQL_DATABASE=Path_event_schema
       - MYSQL_USER=user
       - MYSQL_PASSWORD=root
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
@@ -18,10 +18,12 @@ services:
       context: ./backend
     ports:
       - "5555:5555"
+    depends_on:
+      - mysql
     environment:
       - DB_USER=user
       - DB_PASSWORD=root
-      - DB_DATABASE_NAME=path_db
+      - DB_DATABASE_NAME=Path_event_schema
       - DB_HOST=mysql
   frontend:
     image: frontend
@@ -29,7 +31,7 @@ services:
       context: ./frontend
       args: 
         - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
-        - VITE_BACKEND_URL=http://localhost:5555
+        - VITE_BACKEND_URL=http://54.37.40.204:5555
     ports:
       - "5173:80"
    

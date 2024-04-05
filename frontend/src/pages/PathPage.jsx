@@ -35,9 +35,13 @@ const PathPage = () => {
       return data;
     });
 
-  useSWR(`http://localhost:5555/get-user-by-id/${userId}`, fetcher, {
-    refreshInterval: 1000,
-  });
+  useSWR(
+    `${import.meta.env.VITE_BACKEND_URL}/get-user-by-id/${userId}`,
+    fetcher,
+    {
+      refreshInterval: 1000,
+    }
+  );
 
   useEffect(() => {
     if (!congrats) {

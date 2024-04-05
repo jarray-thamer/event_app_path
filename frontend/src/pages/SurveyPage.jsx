@@ -42,11 +42,15 @@ const SurveyPage = () => {
 
   useEffect(() => {
     const fetchEffect = async () => {
+      console.log(userId);
+      if (userId === null) {
+        navigate("/login");
+      }
       if (userId) {
         console.log("effect if", userId);
         const res = await axios.get(`/check/${userId}`);
 
-        if (res.data.message === "User does not exist") {
+        if (res.data.message === "User does not exist" || userId === null) {
           navigate("/login");
         } else if (res.data.data) {
           console.log("user exist");

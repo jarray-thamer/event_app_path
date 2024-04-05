@@ -6,9 +6,8 @@ import axios from "axios";
 import { BrowserRouter } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
 
-// axios.defaults.baseURL = "http://localhost:5555";
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-console.log(axios.defaults.baseURL);
+console.log(import.meta.env.VITE_BACKEND_URL);
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 

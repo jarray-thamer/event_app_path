@@ -35,17 +35,20 @@ const Admin = () => {
   const fetcherRole = (...args) =>
     fetch(...args).then(async (res) => {
       const data = await res.json();
-
-      if (data.data.role === "admin" && data.data.role === "manager") {
+      if (data.data.role === "admin" || data.data.role === "manager") {
         setShowadmin(true);
       } else {
         navigate("/register-redirect");
       }
       return data;
     });
-  useSWR(`http://localhost:5555/get-user-by-id/${id}`, fetcherRole, {
-    refreshInterval: 100,
-  });
+  useSWR(
+    `${import.meta.env.VITE_BACKEND_URL}/get-user-by-id/${id}`,
+    fetcherRole,
+    {
+      refreshInterval: 100,
+    }
+  );
   // <------- SWR fetch admin ------->
   const fetcherAdmin = (...args) =>
     fetch(...args).then(async (res) => {
@@ -63,10 +66,10 @@ const Admin = () => {
       return data;
     });
 
-  useSWR("http://localhost:5555/get-all-users", fetcherUser, {
+  useSWR(`${import.meta.env.VITE_BACKEND_URL}/get-all-users`, fetcherUser, {
     refreshInterval: 1000,
   });
-  useSWR("http://localhost:5555/get-all-admins", fetcherAdmin, {
+  useSWR(`${import.meta.env.VITE_BACKEND_URL}/get-all-admins`, fetcherAdmin, {
     refreshInterval: 1000,
   });
 
@@ -89,7 +92,7 @@ const Admin = () => {
                           <div className="rounded-full p-2 bg-available w-2 mb-3"></div>
                         )}
                       </h3>
-                      <div>
+                      <div className="flex justify-center">
                         <button
                           className="bg-green-500 text-white px-4 rounded-lg border-none py-1"
                           onClick={async () => {
@@ -263,6 +266,17 @@ const Admin = () => {
                       <td className="px-4 py-2">{user.current_topic}</td>
                       <td className="px-4 py-2 flex space-x-1 items-center">
                         <div className=" mr-5">
+                          <button
+                            onClick={async () => {
+                              const id = user.id;
+                              await axios.put("update-user-to-manager", {
+                                id,
+                              });
+                            }}
+                            className="mr-2 px-2 py-1 text-xs font-bold rounded-md  text-gray-900 border-solid border-1 border-gray-800 hover:opacity-70"
+                          >
+                            Set Manager
+                          </button>
                           <button
                             onClick={async () => {
                               const id = user.id;

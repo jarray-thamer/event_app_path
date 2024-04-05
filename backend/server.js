@@ -1,10 +1,11 @@
 import express from "express";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 app.use(express.json());
 // <----------- Connection to DB ----------->
 import mysql from "mysql2";
+
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -23,9 +24,6 @@ app.use(cors({ origin: "*", credentials: true }));
 // <-----------Body parser ----------->
 import bodyParser from "body-parser";
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// <----------- Bcrypt ----------->
-import bcrypt, { hash } from "bcrypt";
 
 // <------------ Check exist ---------->
 app.get("/check/:clerk_id", async (req, res) => {
@@ -77,10 +75,11 @@ app.post("/register", async (req, res) => {
       const current_stand = 0;
       const admin_state = 0;
       const on_boarding = 0;
+      const current_topic = "";
       const behanceLink = "";
       //   -> sql insert query
       const insertQuery =
-        "INSERT INTO user_db (`clerk_id`, `full_Name`, `email`, `role`, `behanceLink`, `on_boarding`, `path`, `current_stand`, `admin_state`) VALUES (?)";
+        "INSERT INTO user_db (`clerk_id`, `full_Name`, `email`, `role`, `behanceLink`, `on_boarding`, `path`, `current_stand`,`current_topic`, `admin_state`) VALUES (?)";
       const values = [
         clerk_id,
         fullName,
@@ -90,9 +89,10 @@ app.post("/register", async (req, res) => {
         on_boarding,
         path,
         current_stand,
+        current_topic,
         admin_state,
       ];
-      await db.query(insertQuery, [values], (e, result) => {
+      db.query(insertQuery, [values], (e, result) => {
         if (e) {
           console.error("Database query error:", e);
           return res
@@ -112,6 +112,7 @@ app.post("/register", async (req, res) => {
             on_boarding,
             path,
             current_stand,
+            current_topic,
             admin_state,
           };
           return res.status(201).json({
@@ -132,7 +133,7 @@ app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body.data;
     const checkEmailExistence = "SELECT * FROM user_db WHERE `email` =?";
-    await db.query(checkEmailExistence, [email], async (e, data) => {
+    db.query(checkEmailExistence, [email], async (e, data) => {
       // data : [id:"",full_name:"", ...]
       if (data.length > 0) {
         bcrypt.compare(password, data[0].password, async (error, response) => {
@@ -159,7 +160,7 @@ app.put("/on-boarding", async (req, res) => {
   try {
     const { id } = req.body;
     const updateQuery = "UPDATE user_db SET on_boarding =1 WHERE clerk_id =?";
-    await db.query(updateQuery, [id], (e, result) => {
+    db.query(updateQuery, [id], (e, result) => {
       if (e) {
         console.error("Database query error:", e);
         return res.status(500).json({ error: "Internal server error update" });
@@ -183,23 +184,17 @@ app.put("/survey", async (req, res) => {
     const { id, choice, behanceLink } = req.body;
     const updateQuery =
       "UPDATE user_db SET behanceLink= ?, path =?, current_topic =? WHERE clerk_id =?";
-    await db.query(
-      updateQuery,
-      [behanceLink, choice, choice, id],
-      (e, result) => {
-        if (e) {
-          console.error("Database query error:", e);
-          return res
-            .status(500)
-            .json({ error: "Internal server error update" });
-        }
-        if (result) {
-          return res.status(201).json({
-            message: "Path updated successfully",
-          });
-        }
+    db.query(updateQuery, [behanceLink, choice, choice, id], (e, result) => {
+      if (e) {
+        console.error("Database query error:", e);
+        return res.status(500).json({ error: "Internal server error update" });
       }
-    );
+      if (result) {
+        return res.status(201).json({
+          message: "Path updated successfully",
+        });
+      }
+    });
   } catch (e) {
     console.error("Putting Path error:", e);
     res.status(500).json({ error: "Internal server error catch" });
@@ -211,7 +206,7 @@ app.get("/get-user-by-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const getUserByIDQuery = "SELECT * FROM user_db WHERE clerk_id =?";
-    await db.query(getUserByIDQuery, [id], (e, data) => {
+    db.query(getUserByIDQuery, [id], (e, data) => {
       if (e) {
         console.error("Database query error:", e);
         return res.status(500).json({ error: "Internal server error" });
@@ -230,7 +225,7 @@ app.get("/get-user-by-id/:id", async (req, res) => {
 app.get("/get-all-users", async (req, res) => {
   try {
     const getAllUsersQuery = "SELECT * FROM user_db WHERE role='user'";
-    await db.query(getAllUsersQuery, (e, data) => {
+    db.query(getAllUsersQuery, (e, data) => {
       if (e) {
         console.error("Database query error:", e);
         return res.status(500).json({ error: "Internal server error" });
@@ -249,7 +244,7 @@ app.get("/get-all-users", async (req, res) => {
 app.get("/get-all-admins", async (req, res) => {
   try {
     const getAllUsersQuery = "SELECT * FROM user_db WHERE role='admin'";
-    await db.query(getAllUsersQuery, (e, data) => {
+    db.query(getAllUsersQuery, (e, data) => {
       if (e) {
         console.error("Database query error:", e);
         return res.status(500).json({ error: "Internal server error" });
@@ -375,6 +370,18 @@ app.put("/update-user-to-admin", (req, res) => {
   });
 });
 
+// <----------- Update user to manager ------->
+app.put("/update-user-to-manager", (req, res) => {
+  const sql = "UPDATE user_db SET role='manager' WHERE id=?";
+  db.query(sql, [req.body.id], (error, result) => {
+    if (error) {
+      console.error("Error updating user role:", error.message);
+      res.status(500).json({ error: "Internal server error" });
+    } else {
+      res.json({ message: "User role updated successfully" });
+    }
+  });
+});
 // <----------- Set admin state red EndPoint ----------->
 app.put("/set-admin-state-red", (req, res) => {
   const sql = "UPDATE user_db SET admin_state= 0 WHERE id=?";
