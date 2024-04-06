@@ -14,7 +14,7 @@ const db = mysql.createConnection({
 });
 db.connect(function (err) {
   if (err) throw err;
-  console.log("Connected!");
+  console.log("db Connected!");
 });
 
 // <----------- Cors ----------->
@@ -55,7 +55,6 @@ app.get("/check/:clerk_id", async (req, res) => {
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, clerk_id } = req.body;
-    console.log("register", req.body);
     const emailExistsQuery = "SELECT * FROM user_db WHERE `clerk_id` = ?";
     // Check email existence using callback style:
 
@@ -150,7 +149,6 @@ app.post("/login", async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -262,7 +260,6 @@ app.get("/get-all-admins", async (req, res) => {
 // <----------- Delete user EndPoint ----------->
 app.delete("/delete", (req, res) => {
   try {
-    console.log("delete", req.body.id);
     // Assuming you want to delete the user by ID from the 'id' column
     const sql = "DELETE FROM user_db WHERE id=?";
     db.query(sql, [req.body.id], (error, result) => {
