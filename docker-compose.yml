@@ -31,7 +31,6 @@ services:
       context: ./frontend
       args: 
         - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
-        - VITE_BACKEND_URL=http://54.37.40.204:5555
+        - VITE_BACKEND_URL=http://54.37.40.204/api
     ports:
-      - "5173:80"
-   
+      - "80:80"
