@@ -1,4 +1,29 @@
 services:
+  nginx-proxy:
+    restart: unless-stopped
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - nginx:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    restart: unless-stopped
+    environment:
+      - DEFAULT_EMAIL=maha.webdev@gmail.com
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   mysql:
     image: mysql
     restart: unless-stopped
@@ -31,6 +56,16 @@ services:
       context: ./frontend
       args: 
         - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
-        - VITE_BACKEND_URL=http://54.37.40.204/api
-    ports:
-      - "80:80"
+        - VITE_BACKEND_URL=https://www.path4freelancers.online/api
+
+    environment:
+      - VIRTUAL_HOST=www.path4freelancers.online,path4freelancers.online # your domain
+      - LETSENCRYPT_HOST=www.path4freelancers.online,path4freelancers.online
+      - LETSENCRYPT_EMAIL=maha.webdev@gmail.com
+
+volumes:
+  nginx:
+  certs:
+  html:
+  vhost:
+  acme:
