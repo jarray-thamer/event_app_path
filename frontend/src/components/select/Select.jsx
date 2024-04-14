@@ -17,7 +17,7 @@ const Select = ({ SetSearch }) => {
         <option value="payment">Payment</option>
         <option value="client">Client</option>
         <option value="portfolio">Portfolio</option>
-        <option value="pmz">Price</option>
+        <option value="pmz">PMZ</option>
       </select>
     </div>
   );
