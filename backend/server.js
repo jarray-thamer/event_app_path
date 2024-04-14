@@ -29,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/check/:clerk_id", async (req, res) => {
   try {
     const { clerk_id } = req.params;
+    console.log("check clerk:Id -> ", clerk_id);
     const existQuery = "SELECT * FROM user_db WHERE `clerk_id` = ?";
     db.query(existQuery, [clerk_id], async (err, result) => {
       if (err) {
