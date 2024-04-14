@@ -5,7 +5,7 @@ const Select = ({ SetSearch }) => {
         onChange={(e) => {
           SetSearch(e.target.value);
         }}
-        className=" w-full p-2 rounded-lg mr-2 text-center"
+        className=" w-full p-2 rounded-lg mx-2 text-center"
         style={{
           backgroundColor: "#f7f8f9",
           border: "1px solid #e8ecf4",
