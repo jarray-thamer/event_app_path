@@ -45,6 +45,7 @@ app.get("/check/:clerk_id", async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("GET: /check/:clerk_id");
     console.error("Database query error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -122,6 +123,7 @@ app.post("/register", async (req, res) => {
       });
     });
   } catch (error) {
+    console.log("POST: /register");
     console.error("Registration error:", error);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -149,6 +151,8 @@ app.post("/login", async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("POST: /login");
+    console.error("Login error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -170,6 +174,7 @@ app.put("/on-boarding", async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("PUT: on-boarding");
     console.error("Registration error:", error);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -194,6 +199,7 @@ app.put("/survey", async (req, res) => {
       }
     });
   } catch (e) {
+    console.log("PUT: /survey");
     console.error("Putting Path error:", e);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -214,6 +220,7 @@ app.get("/get-user-by-id/:id", async (req, res) => {
       }
     });
   } catch (e) {
+    console.log("GET: /get-user-by-id/:id");
     console.error("Getting user error:", e);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -233,6 +240,7 @@ app.get("/get-all-users", async (req, res) => {
       }
     });
   } catch (e) {
+    console.log("GET: /get-all-users");
     console.error("Getting user error:", e);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -252,6 +260,7 @@ app.get("/get-all-admins", async (req, res) => {
       }
     });
   } catch (e) {
+    console.log("GET: /get-all-admins");
     console.error("Getting user error:", e);
     res.status(500).json({ error: "Internal server error catch" });
   }
@@ -271,6 +280,7 @@ app.delete("/delete", (req, res) => {
       }
     });
   } catch (error) {
+    console.log("DELETE: /delete");
     console.error("Unexpected error:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -278,18 +288,18 @@ app.delete("/delete", (req, res) => {
 
 // <----------- Next stand EndPoint ----------->
 app.put("/next-stand", (req, res) => {
-  const clientPath = ["Client", "Portfolio", "Pricing", "Payment", "Done"];
-  const portfolioPath = ["Portfolio", "Client", "Pricing", "Payment", "Done"];
-  const pricePath = ["Pricing", "Portfolio", "Payment", "Client", "Done"];
-  const paymentPath = ["Payment", "Pricing", "Client", "Portfolio", "Done"];
+  const clientPath = ["Client", "Portfolio", "Payment", "PMZ", "Done"];
+  const portfolioPath = ["Portfolio", "Client", "Payment", "PMZ", "Done"];
+  const pmzPath = ["Payment", "Client", "Portfolio", "PMZ", "Done"];
+  const paymentPath = ["Payment", "Portfolio", "Client", "PMZ", "Done"];
   const { id, path, current_stand } = req.body;
   let nextStand = "";
   if (path === "client") {
     nextStand = clientPath[current_stand + 1];
   } else if (path === "portfolio") {
     nextStand = portfolioPath[current_stand + 1];
-  } else if (path === "price") {
-    nextStand = pricePath[current_stand + 1];
+  } else if (path === "pmz") {
+    nextStand = pmzPath[current_stand + 1];
   } else if (path === "payment") {
     nextStand = paymentPath[current_stand + 1];
   }
@@ -306,24 +316,18 @@ app.put("/next-stand", (req, res) => {
 });
 // <----------- Prev stand EndPoint ----------->
 app.put("/prev-stand", (req, res) => {
-  const clientPath = [
-    "Client",
-    "Portfolio",
-    "Payment",
-    "Project Mastery Zone",
-    "Done",
-  ];
-  const portfolioPath = ["Portfolio", "Client", "Pricing", "Payment", "Done"];
-  const pricePath = ["Pricing", "Portfolio", "Payment", "Client", "Done"];
-  const paymentPath = ["Payment", "Pricing", "Client", "Portfolio", "Done"];
+  const clientPath = ["Client", "Portfolio", "Payment", "PMZ", "Done"];
+  const portfolioPath = ["Portfolio", "Client", "Payment", "PMZ", "Done"];
+  const pmzPath = ["Payment", "Client", "Portfolio", "PMZ", "Done"];
+  const paymentPath = ["Payment", "Portfolio", "Client", "PMZ", "Done"];
   const { id, path, current_stand } = req.body;
   let nextStand = "";
   if (path === "client") {
     nextStand = clientPath[current_stand - 1];
   } else if (path === "portfolio") {
     nextStand = portfolioPath[current_stand - 1];
-  } else if (path === "price") {
-    nextStand = pricePath[current_stand - 1];
+  } else if (path === "pmz") {
+    nextStand = pmzPath[current_stand - 1];
   } else if (path === "payment") {
     nextStand = paymentPath[current_stand - 1];
   }
@@ -331,6 +335,7 @@ app.put("/prev-stand", (req, res) => {
     "UPDATE user_db SET current_stand = current_stand - 1, current_topic = ? WHERE id = ? AND current_stand > 0 ";
   db.query(sql, [nextStand, id], (error, result) => {
     if (error) {
+      console.log("PUT: /prev-stand");
       console.error("Error updating user stand:", error.message);
       res.status(500).json({ error: "Internal server error" }); // Send an error response
     } else {
@@ -346,6 +351,7 @@ app.put("/reset-path", async (req, res) => {
     "UPDATE user_db SET current_stand = 0 , path = '', current_topic = '' WHERE id = ? ";
   db.query(sql, [id], (error, result) => {
     if (error) {
+      console.log("PUT: /reset-path");
       console.error("Error updating user stand:", error.message);
       res.status(500).json({ error: "Internal server error" }); // Send an error response
     } else {
@@ -359,6 +365,7 @@ app.put("/update-user-to-admin", (req, res) => {
   const sql = "UPDATE user_db SET role='admin' WHERE id=?";
   db.query(sql, [req.body.id], (error, result) => {
     if (error) {
+      console.log("PUT: /update-user-to-admin");
       console.error("Error updating user role:", error.message);
       res.status(500).json({ error: "Internal server error" });
     } else {
@@ -372,6 +379,7 @@ app.put("/update-user-to-manager", (req, res) => {
   const sql = "UPDATE user_db SET role='manager' WHERE id=?";
   db.query(sql, [req.body.id], (error, result) => {
     if (error) {
+      console.log("PUT: /update-user-to-manager");
       console.error("Error updating user role:", error.message);
       res.status(500).json({ error: "Internal server error" });
     } else {
@@ -384,6 +392,7 @@ app.put("/set-admin-state-red", (req, res) => {
   const sql = "UPDATE user_db SET admin_state= 0 WHERE id=?";
   db.query(sql, [req.body.id], (error, result) => {
     if (error) {
+      console.log("PUT: /set-admin-state-red");
       console.error("Error updating user role:", error.message);
       res.status(500).json({ error: "Internal server error" });
     } else {
@@ -397,6 +406,7 @@ app.put("/set-admin-state-green", (req, res) => {
   const sql = "UPDATE user_db SET admin_state= 1 WHERE id=?";
   db.query(sql, [req.body.id], (error, result) => {
     if (error) {
+      console.log("PUT: /set-admin-state-green");
       console.error("Error updating user role:", error.message);
       res.status(500).json({ error: "Internal server error" });
     } else {

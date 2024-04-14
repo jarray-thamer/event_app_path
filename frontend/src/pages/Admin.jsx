@@ -206,9 +206,9 @@ const Admin = () => {
                   <th className="px-4 py-2">ID</th>
                   <th className="px-4 py-2">Full Name</th>
                   <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Path </th>
+                  <th className="px-4 py-2">Path</th>
                   <th className="px-4 py-2">Behance</th>
-                  <th className="px-4 py-2">Current Stand</th>
+                  <th className="px-4 py-2">current_stand </th>
                   <th className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -264,6 +264,7 @@ const Admin = () => {
                         }
                       </td>
                       <td className="px-4 py-2">{user.current_topic}</td>
+
                       <td className="px-4 py-2 flex space-x-1 items-center">
                         <div className=" mr-5">
                           <button

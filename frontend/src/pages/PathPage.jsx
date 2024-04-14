@@ -29,6 +29,9 @@ const PathPage = () => {
       if (data.data.role === "admin") {
         navigate("/admin");
       }
+      if (data.data.path === "") {
+        navigate("/survey");
+      }
       setUserInfo(data.data);
       setPath(data.data.path);
 
@@ -47,7 +50,6 @@ const PathPage = () => {
     if (!congrats) {
       if (userInfo) {
         if (userInfo.current_stand >= 4) {
-          console.log("congrats");
           setShowPopup(true);
           setCongrats(true);
         }
@@ -69,7 +71,7 @@ const PathPage = () => {
     if (UserChoice == "payment") {
       setUserPath(["Payment", "Portfolio", "Client", "Project Mastery Zone"]);
     }
-    if (UserChoice == "price") {
+    if (UserChoice == "pmz") {
       setUserPath(["Payment", "Client", "Portfolio", "Project Mastery Zone"]);
     }
     if (UserChoice == "portfolio") {
