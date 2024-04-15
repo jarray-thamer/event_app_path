@@ -12,6 +12,7 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+
   acme-companion:
     image: nginxproxy/acme-companion
     container_name: nginx-proxy-acme
@@ -24,6 +25,7 @@ services:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
   mysql:
     image: mysql
     restart: unless-stopped
@@ -37,6 +39,7 @@ services:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - ./my-db:/var/lib/mysql
+
   backend:
     image: backend
     build: 
@@ -50,6 +53,7 @@ services:
       - DB_PASSWORD=root
       - DB_DATABASE_NAME=Path_event_schema
       - DB_HOST=mysql
+
   frontend:
     image: frontend
     build: 
@@ -57,9 +61,8 @@ services:
       args: 
         - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
         - VITE_BACKEND_URL=https://www.path4freelancers.online/api
-
     environment:
-      - VIRTUAL_HOST=www.path4freelancers.online,path4freelancers.online # your domain
+      - VIRTUAL_HOST=www.path4freelancers.online,path4freelancers.online
       - LETSENCRYPT_HOST=www.path4freelancers.online,path4freelancers.online
       - LETSENCRYPT_EMAIL=maha.webdev@gmail.com
 
