@@ -42,7 +42,7 @@ services:
 
   backend:
     image: backend
-    build: 
+    build:
       context: ./backend
     ports:
       - "5555:5555"
@@ -56,9 +56,9 @@ services:
 
   frontend:
     image: frontend
-    build: 
+    build:
       context: ./frontend
-      args: 
+      args:
         - VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2FwaXRhbC1taWRnZS01MC5jbGVyay5hY2NvdW50cy5kZXYk
         - VITE_BACKEND_URL=https://www.path4freelancers.online/api
     environment:
@@ -70,5 +70,5 @@ volumes:
   nginx:
   certs:
   html:
-  vhost:
-  acme:
+  vhost:
+  acme:
